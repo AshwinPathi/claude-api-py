@@ -47,7 +47,9 @@ def sse(
     url: str, headers: HeaderType, request_body: Optional[JsonType] = None
 ) -> Iterator[str]:
     """Public method for a POST request that requires SSE."""
-    for streamed_data in _custom_requests_sse(url, headers=headers, request_body=request_body):
+    for streamed_data in _custom_requests_sse(
+        url, headers=headers, request_body=request_body
+    ):
         yield streamed_data
 
 

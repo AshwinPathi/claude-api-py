@@ -68,16 +68,6 @@ class ClaudeAPI:
     #                                                                  #
     ####################################################################
 
-    """Generally speaking, this API returns and manages `Contexts`, which are
-    representations of chats and organizations that the user is participating
-    in.
-
-    Users of the API are required to manage contexts on their own and pass them
-    into methods when necessary. You can get an initial context by calling
-    `create_conversation()`. From here, you can pass this context into
-    `send_message()`.
-    """
-
     def send_message(
         self,
         message: str,
@@ -95,16 +85,22 @@ class ClaudeAPI:
             conversation.organization.uuid, conversation.uuid, message, timezone, model
         )
 
-    def start_conversation(self, organization: OrganizationContext, message: str, conversation_name: str) -> Optional[ConversationContext]:
+    def start_conversation(
+        self, organization: OrganizationContext, message: str, conversation_name: str
+    ) -> Optional[ConversationContext]:
         """Start a new conversation with claude in |organization|, sending an initial |message|"""
         return self._create_conversation(organization.uuid, message, conversation_name)
 
-    def get_conversation_info(self, conversation: Optional[ConversationContext] = None) -> JsonType:
+    def get_conversation_info(
+        self, conversation: Optional[ConversationContext] = None
+    ) -> JsonType:
         """Get full conversation info for the given conversation (or current conversation context)"""
         conversation = self._get_conversation_context(conversation)
         if conversation is None:
             raise RuntimeError("No conversation context provided or set.")
-        return self._get_conversation_info(conversation.organization.uuid, conversation.uuid)
+        return self._get_conversation_info(
+            conversation.organization.uuid, conversation.uuid
+        )
 
     def clear_conversations(
         self, organization: OrganizationContext
@@ -112,7 +108,9 @@ class ClaudeAPI:
         conversations = self._get_conversations_from_org(organization.uuid)
         failed = []
         for conversation in conversations:
-            if self._delete_conversation_from_org(conversation.organization.uuid, conversation.uuid):
+            if self._delete_conversation_from_org(
+                conversation.organization.uuid, conversation.uuid
+            ):
                 failed.append(conversation)
         return failed
 
@@ -122,7 +120,9 @@ class ClaudeAPI:
         conversation = self._get_conversation_context(conversation)
         if conversation is None:
             raise RuntimeError("No conversation context provided or set.")
-        return self._delete_conversation_from_org(conversation.organization.uuid, conversation.uuid)
+        return self._delete_conversation_from_org(
+            conversation.organization.uuid, conversation.uuid
+        )
 
     def get_conversations(
         self, organization: OrganizationContext
@@ -185,7 +185,7 @@ class ClaudeAPI:
         return json.loads(last_message)["completion"]
 
     def _create_conversation(
-        self, organization_uuid: str, conversation_name: str, initial_message: str
+        self, organization_uuid: str, initial_message: str, conversation_name: str
     ) -> Optional[ConversationContext]:
         """Creates a new conversation with the name |conversation_name|. Returns a new conversation
         context if successful, otherwise returns None. Also creates a title for the new conversation.
@@ -199,6 +199,13 @@ class ClaudeAPI:
             request_body={"name": "", "uuid": conversation_uuid},
         )
         if response.ok:
+            _ = self._send_message(
+                organization_uuid,
+                conversation_uuid,
+                initial_message,
+                timezone=constants.Timezone.LA,
+                model=constants.Model.CLAUDE_2,
+            )
             if self._generate_chat_title(
                 organization_uuid, conversation_uuid, initial_message
             ):
@@ -209,7 +216,7 @@ class ClaudeAPI:
                     uuid=conversation_uuid,
                     name=conversation_name,
                     summary="",
-                    organization=organization
+                    organization=organization,
                 )
         return None
 
@@ -230,13 +237,15 @@ class ClaudeAPI:
         )
         return response.ok
 
-    def _get_conversation_info(self, organization_uuid: str, conversation_uuid: str) -> JsonType:
+    def _get_conversation_info(
+        self, organization_uuid: str, conversation_uuid: str
+    ) -> JsonType:
         """Return the conversation info in JSON format from a given conversation."""
         response = self._request_internal(
             constants.GET_CONVERSATION_INFO_API_ENDPOINT.format(
                 organization_uuid=organization_uuid, conversation_uuid=conversation_uuid
             ),
-            request_type=RequestType.GET
+            request_type=RequestType.GET,
         )
         if not response.ok:
             return {}
@@ -376,17 +385,10 @@ class ClaudeAPI:
                 modifyable_headers[header_key] = header_value
         return modifyable_headers
 
-    def _validate_conversation_context(
-        self, conversation_context: Optional[ConversationContext]
-    ):
-        assert (
-            conversation_context is not None
-            or self._current_conversation_context is not None
-        ), "No conversation context provided."
-
     def _validate_params(self):
         """Performs some assertions to make sure that input parameters are correct."""
         assert self._session_key, "Session key is None or non-existent."
+        assert self._session_key.startswith('sk-ant-sid01-'), "Session key is malformed."
         assert self._base_url == constants.BASE_URL, "Base URL is invalid."
 
     def _get_conversation_context(
@@ -399,7 +401,9 @@ class ClaudeAPI:
             return self._current_conversation_context
         return None
 
-    def _switch_conversation_context(self, conversation_context: ConversationContext) -> None:
+    def _switch_conversation_context(
+        self, conversation_context: ConversationContext
+    ) -> None:
         """Switches the current conversation to |conversation_context|"""
         self._current_conversation_context = conversation_context
 
