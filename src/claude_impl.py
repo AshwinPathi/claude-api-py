@@ -50,6 +50,9 @@ class ClaudeAPI:
         You can access the session key by going to the claude.ai chat app, going
         to the `inspect element` view, going to `Application` settings, going to
         `cookies --> claude.ai` and using the `sessionKey` cookie.
+
+        Its probably also best to use the headers that the browser uses to send requests,
+        since there is a higher chance of the script not getting 403ed.
         """
         self._session_key = session_key
         self._base_url = base_url
@@ -105,28 +108,45 @@ class ClaudeAPI:
     def clear_conversations(
         self, organization: OrganizationContext
     ) -> List[ConversationContext]:
+        """Clear all conversations in an |orgnaization|."""
         conversations = self._get_conversations_from_org(organization.uuid)
         failed = []
         for conversation in conversations:
-            if self._delete_conversation_from_org(
+            if not self._delete_conversation_from_org(
                 conversation.organization.uuid, conversation.uuid
             ):
                 failed.append(conversation)
+            else:
+                # If we removed a conversation context that is the current
+                # context we switched to, clear it.
+                current_context = self._get_conversation_context()
+                if current_context is not None and current_context.uuid == conversation.uuid:
+                    self._clear_conversation_context()
         return failed
 
     def delete_conversation(
         self, conversation: Optional[ConversationContext] = None
     ) -> bool:
+        """Delete a single conversation |conversation|, or the current conversation
+        context we are in.
+        """
         conversation = self._get_conversation_context(conversation)
         if conversation is None:
             raise RuntimeError("No conversation context provided or set.")
-        return self._delete_conversation_from_org(
+        deleted = self._delete_conversation_from_org(
             conversation.organization.uuid, conversation.uuid
         )
+        # If we deleted the current conversation context, make sure that it can't
+        # be used again.
+        if deleted and self._get_conversation_context() is not None:
+            self._clear_conversation_context()
+        return deleted
+
 
     def get_conversations(
         self, organization: OrganizationContext
     ) -> List[ConversationContext]:
+        """Get a list of all conversations from |organization|."""
         return self._get_conversations_from_org(organization.uuid)
 
     def get_organizations(self) -> List[OrganizationContext]:
@@ -389,7 +409,6 @@ class ClaudeAPI:
         """Performs some assertions to make sure that input parameters are correct."""
         assert self._session_key, "Session key is None or non-existent."
         assert self._session_key.startswith('sk-ant-sid01-'), "Session key is malformed."
-        assert self._base_url == constants.BASE_URL, "Base URL is invalid."
 
     def _get_conversation_context(
         self, conversation_context_fallback: Optional[ConversationContext] = None

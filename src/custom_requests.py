@@ -1,6 +1,5 @@
-"""Home made requests library with urllib since this helps bypass Claude API protections.
-
-Note that the |header| parameter for all these methods are required.
+"""Home made barebones requests library with urllib since this helps bypass 
+Claude API protections.
 """
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -33,33 +32,6 @@ class Response:
 
 def get(url: str, headers: HeaderType) -> Response:
     """Public method for a GET Request."""
-    return _custom_requests_get(url, headers=headers)
-
-
-def post(
-    url: str, headers: HeaderType, request_body: Optional[JsonType] = None
-) -> Response:
-    """Public method for a POST Request."""
-    return _custom_requests_post(url, headers=headers, request_body=request_body)
-
-
-def sse(
-    url: str, headers: HeaderType, request_body: Optional[JsonType] = None
-) -> Iterator[str]:
-    """Public method for a POST request that requires SSE."""
-    for streamed_data in _custom_requests_sse(
-        url, headers=headers, request_body=request_body
-    ):
-        yield streamed_data
-
-
-def delete(url: str, headers: HeaderType) -> Response:
-    """Public method for a DELETE request."""
-    return _custom_requests_delete(url, headers=headers)
-
-
-def _custom_requests_get(url: str, headers: HeaderType) -> Response:
-    """Private method wrapper for GET requests to a URL."""
     request = Request(url)
     for header_key, header_value in headers.items():
         request.add_header(header_key, header_value)
@@ -67,10 +39,10 @@ def _custom_requests_get(url: str, headers: HeaderType) -> Response:
     return _safe_request_read(request)
 
 
-def _custom_requests_post(
+def post(
     url: str, headers: HeaderType, request_body: Optional[JsonType] = None
 ) -> Response:
-    """Private method wrapper for POST requests to a URL."""
+    """Public method for a POST Request."""
     request = Request(url, method="POST")
     for header_key, header_value in headers.items():
         request.add_header(header_key, header_value)
@@ -82,11 +54,11 @@ def _custom_requests_post(
     return _safe_request_read(request, data=encoded_request_body)
 
 
-def _custom_requests_sse(
+
+def sse(
     url: str, headers: HeaderType, request_body: Optional[JsonType] = None
 ) -> Iterator[str]:
-    """Helper method for streaming SSE responses."""
-
+    """Public method for a POST request that requires SSE."""
     request = Request(url, method="POST")
     for header_key, header_value in headers.items():
         request.add_header(header_key, header_value)
@@ -101,8 +73,8 @@ def _custom_requests_sse(
         print(e)
 
 
-def _custom_requests_delete(url: str, headers: HeaderType) -> Response:
-    """Helper method for calling HTTP delete."""
+def delete(url: str, headers: HeaderType) -> Response:
+    """Public method for a DELETE request."""
     request = Request(url, method="DELETE")
     for header_key, header_value in headers.items():
         request.add_header(header_key, header_value)
