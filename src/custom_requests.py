@@ -5,11 +5,12 @@ Note that the |header| parameter for all these methods are required.
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 import json
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional, Union, List, Iterator
 from dataclasses import dataclass
 import sseclient
 
-JsonType = Dict[str, Any]
+JsonType = Union[str, int, float, bool, None, Dict[str, Any], List[Any]]
+HeaderType = Dict[str, str]
 
 
 @dataclass
@@ -30,31 +31,32 @@ class Response:
             raise RuntimeError("Decoding non-str or bytes type.")
 
 
-def get(url: str, headers: JsonType) -> Response:
+def get(url: str, headers: HeaderType) -> Response:
     """Public method for a GET Request."""
     return _custom_requests_get(url, headers=headers)
 
 
 def post(
-    url: str, headers: JsonType, request_body: Optional[JsonType] = None
+    url: str, headers: HeaderType, request_body: Optional[JsonType] = None
 ) -> Response:
     """Public method for a POST Request."""
     return _custom_requests_post(url, headers=headers, request_body=request_body)
 
 
 def sse(
-    url: str, headers: JsonType, request_body: Optional[JsonType] = None
-) -> Response:
+    url: str, headers: HeaderType, request_body: Optional[JsonType] = None
+) -> Iterator[str]:
     """Public method for a POST request that requires SSE."""
-    return _custom_requests_sse(url, headers=headers, request_body=request_body)
+    for streamed_data in _custom_requests_sse(url, headers=headers, request_body=request_body):
+        yield streamed_data
 
 
-def delete(url: str, headers: JsonType) -> Response:
+def delete(url: str, headers: HeaderType) -> Response:
     """Public method for a DELETE request."""
     return _custom_requests_delete(url, headers=headers)
 
 
-def _custom_requests_get(url: str, headers: JsonType) -> Response:
+def _custom_requests_get(url: str, headers: HeaderType) -> Response:
     """Private method wrapper for GET requests to a URL."""
     request = Request(url)
     for header_key, header_value in headers.items():
@@ -64,7 +66,7 @@ def _custom_requests_get(url: str, headers: JsonType) -> Response:
 
 
 def _custom_requests_post(
-    url: str, headers: JsonType, request_body: Optional[JsonType] = None
+    url: str, headers: HeaderType, request_body: Optional[JsonType] = None
 ) -> Response:
     """Private method wrapper for POST requests to a URL."""
     request = Request(url, method="POST")
@@ -79,9 +81,9 @@ def _custom_requests_post(
 
 
 def _custom_requests_sse(
-    url: str, headers: JsonType, request_body: Optional[JsonType] = None
-) -> Response:
-    """Helper method for streaming SSE responses. Note that the headers are required for this method."""
+    url: str, headers: HeaderType, request_body: Optional[JsonType] = None
+) -> Iterator[str]:
+    """Helper method for streaming SSE responses."""
 
     request = Request(url, method="POST")
     for header_key, header_value in headers.items():
@@ -91,17 +93,13 @@ def _custom_requests_sse(
     try:
         response = urlopen(request, data=encoded_request_body)
         client = sseclient.SSEClient(response)
-        # Don't return all the messages, just the last one with the full response.
-        last_event = ""
         for event in client.events():
-            last_event = event.data
-        return Response(ok=False, data=last_event)
+            yield event.data
     except (HTTPError, URLError) as e:
         print(e)
-        return Response(ok=False, data=b"")
 
 
-def _custom_requests_delete(url: str, headers: JsonType) -> Response:
+def _custom_requests_delete(url: str, headers: HeaderType) -> Response:
     """Helper method for calling HTTP delete."""
     request = Request(url, method="DELETE")
     for header_key, header_value in headers.items():
