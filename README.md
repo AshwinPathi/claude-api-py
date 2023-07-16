@@ -22,5 +22,11 @@ organizations = api.get_organizations()
 conversations = api.get_conversations(organization[0])
 
 # Send a message to the first conversation
-api.send_message(conversation[0], 'Hi Claude!')
+response = api.send_message('Hi Claude!', conversation = conversation[0])
+
+# Or, you can set the context and all subsequent calls will use that conversation.
+
+api.switch_conversation_context(conversations[0])
+response = api.send_message('Hi Claude!')
+response = api.send_message('How are you doing today?')
 ```
