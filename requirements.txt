@@ -1,0 +1,1 @@
+sseclient_py==1.7.2
