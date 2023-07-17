@@ -1,11 +1,12 @@
-import src.constants as constants
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
 from enum import Enum
 import json
 import uuid
-import src.custom_requests as requests
-from src.custom_requests import JsonType, HeaderType
+
+import custom_requests as requests
+from custom_requests import JsonType, HeaderType
+import constants
 
 
 class RequestType(Enum):
@@ -120,7 +121,10 @@ class ClaudeAPI:
                 # If we removed a conversation context that is the current
                 # context we switched to, clear it.
                 current_context = self._get_conversation_context()
-                if current_context is not None and current_context.uuid == conversation.uuid:
+                if (
+                    current_context is not None
+                    and current_context.uuid == conversation.uuid
+                ):
                     self._clear_conversation_context()
         return failed
 
@@ -141,7 +145,6 @@ class ClaudeAPI:
         if deleted and self._get_conversation_context() is not None:
             self._clear_conversation_context()
         return deleted
-
 
     def get_conversations(
         self, organization: OrganizationContext
@@ -194,7 +197,7 @@ class ClaudeAPI:
         header["accept"] = "text/event-stream,text/event-stream"
         last_message = ""
         for streamed_response in requests.sse(
-            constants.BASE_URL + constants.APPEND_MESSAGE_API_ENDPOINT,
+            self._base_url + constants.APPEND_MESSAGE_API_ENDPOINT,
             headers=header,
             request_body=request_body,
         ):
@@ -408,7 +411,9 @@ class ClaudeAPI:
     def _validate_params(self):
         """Performs some assertions to make sure that input parameters are correct."""
         assert self._session_key, "Session key is None or non-existent."
-        assert self._session_key.startswith('sk-ant-sid01-'), "Session key is malformed."
+        assert self._session_key.startswith(
+            "sk-ant-sid01-"
+        ), "Session key is malformed."
 
     def _get_conversation_context(
         self, conversation_context_fallback: Optional[ConversationContext] = None

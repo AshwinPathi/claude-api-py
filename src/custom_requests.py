@@ -3,10 +3,12 @@ Claude API protections.
 """
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
-import json
 from typing import Dict, Any, Optional, Union, List, Iterator
 from dataclasses import dataclass
+import json
+
 import sseclient
+
 
 JsonType = Union[str, int, float, bool, None, Dict[str, Any], List[Any]]
 HeaderType = Dict[str, str]
@@ -52,7 +54,6 @@ def post(
 
     encoded_request_body = json.dumps(request_body).encode()
     return _safe_request_read(request, data=encoded_request_body)
-
 
 
 def sse(
