@@ -4,7 +4,7 @@
 ## Disclaimer
 This library is UNOFFICIAL and you might get banned for using it.
 
-Its also under active development and is extremely unstable, so there are no guarantees it will work for you. If you find a bug or you think it should work in a scenario where it doesn't file an issue.
+Its also under active development and is extremely unstable, so there are no guarantees it will work for you. If you find a bug or you think it should work in a scenario where it doesn't, file an issue.
 
 
 ## Implemented actions:
