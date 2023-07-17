@@ -1,5 +1,20 @@
 # Unofficial (synchronous) Claude API For Python
 
+
+## Disclaimer
+This library is UNOFFICIAL and you might get banned for using it.
+
+Its also under active development and is extremely unstable, so there are no guarantees it will work for you. If you find a bug or you think it should work in a scenario where it doesn't file an issue.
+
+
+## Implemented actions:
+- Getting organizations you're in
+- Getting conversations you're in
+- Starting a conversation
+- Sending a message and receiving a response (can't send files yet)
+- Delete a conversation
+
+
 ## Usage
 
 ### Step 1
@@ -10,7 +25,6 @@ $pip install git+git://github.com/github.com/AshwinPathi/claude.git#egg=claude
 
 ### Step 2
 Get a `sessionKey` from the Claude website. You will need this to start the bot.
-
 
 ### Step 1
 Use the bot.
