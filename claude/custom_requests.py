@@ -1,11 +1,11 @@
 """Home made barebones requests library with urllib since this helps bypass 
 Claude API protections.
 """
-from urllib.request import Request, urlopen
-from urllib.error import HTTPError, URLError
-from typing import Dict, Any, Optional, Union, List, Iterator
 from dataclasses import dataclass
 import json
+from typing import Dict, Any, Optional, Union, List, Iterator
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError, URLError
 
 import sseclient
 

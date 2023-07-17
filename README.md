@@ -5,7 +5,7 @@
 ### Step 1
 Install the library using the following:
 ```
-$pip install git+git://github.com/github.com/AshwinPathi/claude.git#egg=src
+$pip install git+git://github.com/github.com/AshwinPathi/claude.git#egg=claude
 ```
 
 ### Step 2

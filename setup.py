@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-from src import __version__
+from claude import __version__
 
 setup(
     name='claude',

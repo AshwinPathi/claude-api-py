@@ -1,11 +1,10 @@
 """Helper class to access Claude APIs via raw json."""
-from typing import List, Optional, Dict, Any, Iterator
-from collections import defaultdict
 import json
+from typing import List, Optional, Dict, Any, Iterator
 
-import constants
-import custom_requests as requests
-from custom_requests import JsonType, HeaderType
+from claude import constants
+from claude import custom_requests
+from claude.custom_requests import JsonType, HeaderType
 
 
 class RawClaudeAPI:
@@ -54,7 +53,7 @@ class RawClaudeAPI:
         else:
             header["accept"] = "text/event-stream,text/event-stream"
 
-        for streamed_data_chunk in requests.sse(
+        for streamed_data_chunk in custom_requests.sse(
             self._base_url + constants.APPEND_MESSAGE_API_ENDPOINT,
             headers=header,
             request_body=request_body,
@@ -71,7 +70,7 @@ class RawClaudeAPI:
         header.update(self._spoofed_headers)
         header.update(self._get_auth_header())
         header.update({"content-type": "application/json"})
-        response = requests.post(
+        response = custom_requests.post(
             self._base_url
             + constants.START_CONVERSATION_API_ENDPOINT.format(
                 organization_uuid=organization_uuid
@@ -90,7 +89,7 @@ class RawClaudeAPI:
         header = {}
         header.update(self._spoofed_headers)
         header.update(self._get_auth_header())
-        response = requests.delete(
+        response = custom_requests.delete(
             constants.DELETE_CONVERSATION_API_ENDPOINT.format(
                 organization_uuid=organization_uuid, conversation_uuid=conversation_uuid
             ),
@@ -114,7 +113,7 @@ class RawClaudeAPI:
         header.update(self._spoofed_headers)
         header.update(self._get_auth_header())
         header.update({"content-type": "application/json"})
-        response = requests.post(
+        response = custom_requests.post(
             self._base_url + constants.GENERATE_CHAT_TITLE_API_ENDPOINT,
             headers=header,
             request_body={
@@ -136,7 +135,7 @@ class RawClaudeAPI:
         header.update(self._spoofed_headers)
         header.update(self._get_auth_header())
         header.update({"content-type": "application/json"})
-        response = requests.get(
+        response = custom_requests.get(
             self._base_url
             + constants.GET_CONVERSATION_INFO_API_ENDPOINT.format(
                 organization_uuid=organization_uuid, conversation_uuid=conversation_uuid
@@ -152,7 +151,7 @@ class RawClaudeAPI:
         header.update(self._spoofed_headers)
         header.update(self._get_auth_header())
         header.update({"content-type": "application/json"})
-        response = requests.get(
+        response = custom_requests.get(
             self._base_url
             + constants.GET_CONVERSATIONS_API_ENDPOINT.format(
                 organization_uuid=organization_uuid
@@ -179,7 +178,7 @@ class RawClaudeAPI:
         header.update(self._spoofed_headers)
         header.update(self._get_auth_header())
         header.update({"content-type": "application/json"})
-        response = requests.get(
+        response = custom_requests.get(
             self._base_url + constants.GET_ORGANIZATIONS_API_ENDPOINT, headers=header
         )
         if not response.ok:

@@ -1,12 +1,12 @@
-from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
 from enum import Enum
 import json
+from typing import Optional, Dict, List
 import uuid
 
-import custom_requests as requests
-from custom_requests import JsonType, HeaderType
-import constants
+from claude import custom_requests
+from claude import constants
+from claude.custom_requests import JsonType, HeaderType
 
 
 class RequestType(Enum):
@@ -196,7 +196,7 @@ class ClaudeAPI:
         header = self._attach_necessary_headers(default_headers)
         header["accept"] = "text/event-stream,text/event-stream"
         last_message = ""
-        for streamed_response in requests.sse(
+        for streamed_response in custom_requests.sse(
             self._base_url + constants.APPEND_MESSAGE_API_ENDPOINT,
             headers=header,
             request_body=request_body,
@@ -361,7 +361,7 @@ class ClaudeAPI:
         request_type: RequestType,
         request_body: Optional[JsonType] = None,
         custom_header: Optional[HeaderType] = None,
-    ) -> requests.Response:
+    ) -> custom_requests.Response:
         """Internal request method that wraps requests to the claude API with
         the correct headers, proxy, and retry parameters.
         """
@@ -374,13 +374,13 @@ class ClaudeAPI:
         full_url = self._base_url + api_endpoint
 
         if request_type == RequestType.GET:
-            response = requests.get(full_url, headers=header)
+            response = custom_requests.get(full_url, headers=header)
         elif request_type == RequestType.POST:
-            response = requests.post(
+            response = custom_requests.post(
                 full_url, headers=header, request_body=request_body
             )
         elif request_type == RequestType.DELETE:
-            response = requests.delete(full_url, headers=header)
+            response = custom_requests.delete(full_url, headers=header)
         else:
             raise RuntimeError("Invalid Request Type")
 
