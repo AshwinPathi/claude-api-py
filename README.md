@@ -1,5 +1,4 @@
-# Unofficial (synchronous) Claude API For Python
-
+# Unofficial Claude API For Python
 
 ## Disclaimer
 This library is UNOFFICIAL and you might get banned for using it.
@@ -8,11 +7,15 @@ Its also under active development and is extremely unstable, so there are no gua
 
 
 ## Implemented actions:
+The Unofficial Claude API is under active development. The following endpoints are usable in some capacity:
+
 - Getting organizations you're in
 - Getting conversations you're in
 - Starting a conversation
 - Sending a message and receiving a response (can't send files yet)
 - Delete a conversation
+
+Note that the api is __**synchronous**__.
 
 
 ## Usage
