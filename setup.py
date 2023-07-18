@@ -9,6 +9,6 @@ setup(
     py_modules=find_packages(),
 
     install_requires=[
-        'sseclient',
+        'sseclient-py',
     ],
 )
