@@ -41,6 +41,24 @@ GET_CONVERSATION_INFO_API_ENDPOINT = (
 # API endpoint to rename a conversation
 RENAME_CONVERSATION_API_ENDPOINT = "/api/rename_chat"
 
+# Common headers that are used to bypass 403s.
+# Note that this doesn't contain user agent.
+HEADERS = {
+    "content-type": "application/json",
+    "authority": "claude.ai",
+    "accept": "*/*",
+    "accept-language": "en-US,en;q=0.9",
+    "dnt": "1",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-site": "same-origin",
+    "upgrade-insecure-requests": "1",
+    "connection": "keep-alive",
+}
+
+# User agent you can use by default. Its reccomended to change this to the user agent your browser uses
+# when you log into anthropic. This is just here as a default.
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0'
 
 ####################################################################
 #                                                                  #

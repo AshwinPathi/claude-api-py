@@ -3,16 +3,13 @@ Claude API protections.
 """
 from dataclasses import dataclass
 import json
-from typing import Dict, Any, Optional, Union, List, Iterator
+from typing import Optional, Union, Iterator
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
 import sseclient
 
-
-JsonType = Union[str, int, float, bool, None, Dict[str, Any], List[Any]]
-HeaderType = Dict[str, str]
-
+from claude.custom_types import JsonType, HeaderType
 
 @dataclass
 class Response:

@@ -3,3 +3,4 @@ __pycache__/
 claude_key
 temp_*.py
 *.egg-info
+*.env
