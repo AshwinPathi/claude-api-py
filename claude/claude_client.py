@@ -132,12 +132,14 @@ class ClaudeClient:
             return None
         return response.json()
 
-    def rename_conversation_title(self, organization_uuid: str, conversation_uuid: str, new_title: str) -> Optional[JsonType]:
+    def rename_conversation_title(
+        self, organization_uuid: str, conversation_uuid: str, new_title: str
+    ) -> Optional[JsonType]:
         """Renames a conversation title to |new_title|."""
         request_body = {
             "organization_uuid": organization_uuid,
             "conversation_uuid": conversation_uuid,
-            "title": new_title
+            "title": new_title,
         }
         header = {}
         header.update(self._get_default_header())
@@ -145,7 +147,7 @@ class ClaudeClient:
         response = custom_requests.post(
             self._get_api_url(constants.RENAME_CONVERSATION_API_ENDPOINT),
             headers=header,
-            request_body=request_body
+            request_body=request_body,
         )
         if not response.ok:
             return None

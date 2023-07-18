@@ -11,6 +11,7 @@ import sseclient
 
 from claude.custom_types import JsonType, HeaderType
 
+
 @dataclass
 class Response:
     """Wrapper for the return type for all custom requests methods.

@@ -58,7 +58,9 @@ HEADERS = {
 
 # User agent you can use by default. Its reccomended to change this to the user agent your browser uses
 # when you log into anthropic. This is just here as a default.
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0'
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0"
+)
 
 ####################################################################
 #                                                                  #
