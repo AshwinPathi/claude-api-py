@@ -1,6 +1,7 @@
 __pycache__/
 .vscode/
 claude_key
-temp_*.py
+temp*.py
 *.egg-info
 *.env
+ignore/

@@ -126,6 +126,7 @@ class ClaudeWrapper:
     def get_conversation_info(
         self, conversation_uuid: Optional[str] = None
     ) -> Optional[JsonType]:
+        """Gets the message history for a |conversation_uuid| or the current context."""
         conversation_to_use = self._get_conversation_or_context(conversation_uuid)
         if conversation_to_use is None:
             return None
@@ -134,10 +135,11 @@ class ClaudeWrapper:
         )
 
     def delete_all_conversations(self) -> List[str]:
+        """Deletes all the conversations in the organization."""
         failed_deletion = []
         conversations = self._client.get_conversations_from_org(self._organization_uuid)
         for conversation in conversations:  # type: ignore
-            if self.delete_conversation(conversation["uuid"]):
+            if not self.delete_conversation(conversation["uuid"]):
                 failed_deletion.append(conversation["uuid"])
         return failed_deletion
 
@@ -158,6 +160,7 @@ class ClaudeWrapper:
         return conversation_deleted
 
     def get_conversations(self) -> Optional[JsonType]:
+        """Gets a json dictionary of all the conversations in the current organization."""
         return self._client.get_conversations_from_org(self._organization_uuid)
 
     def set_conversation_context(self, conversation_uuid: str) -> None:
