@@ -27,7 +27,7 @@ Note that the api is __**synchronous**__.
 ### Step 1
 Install the library using the following:
 ```
-pip install rev-claude-api
+pip install claude-api-py
 ```
 
 If that doesn't work, you can install directly from this github repository:
