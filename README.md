@@ -21,7 +21,13 @@ Note that the api is __**synchronous**__.
 ### Step 1
 Install the library using the following:
 ```
-pip install git+git://github.com/github.com/AshwinPathi/claude.git#egg=claude
+pip install rev-claude-api
+```
+
+If that doesn't work, you can install directly from this github repository:
+
+```
+pip install git+git://github.com/github.com/AshwinPathi/claude.git
 ```
 
 ### Step 2
