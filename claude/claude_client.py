@@ -1,7 +1,6 @@
 """Helper class to access Claude APIs via raw json."""
 import json
 import pathlib
-from pathlib import Path
 from typing import List, Optional, Iterator, Union
 
 
