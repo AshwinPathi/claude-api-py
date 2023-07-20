@@ -20,6 +20,8 @@ load_dotenv()
 SESSION_KEY = str(os.environ.get("SESSION_KEY"))
 
 
+# Note that there are intentional 1 second delays between API calls to ensure that you don't
+# get rate limited.
 def main():
     client = claude_client.ClaudeClient(SESSION_KEY)
     organizations = client.get_organizations()
@@ -71,6 +73,19 @@ def main():
     claude_obj.set_conversation_context(conversation_uuid)
     response = claude_obj.send_message("How are you doing today?")
     print("Send another message")
+    pprint.pprint(response)
+    print()
+    time.sleep(1)
+
+
+    # Send an attachment to claude and ask it to output some information about it.
+    # First generate the attachment.
+    attachment = claude_obj.get_attachment('example_attachment.txt')
+    if attachment is None:
+        print("Getting attachment failed.")
+        return
+    response = claude_obj.send_message("Hi Claude, what does this attachment say?", attachments=[attachment])
+    print("Checking attachment response")
     pprint.pprint(response)
     print()
     time.sleep(1)

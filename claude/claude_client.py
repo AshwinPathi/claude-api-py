@@ -1,10 +1,15 @@
 """Helper class to access Claude APIs via raw json."""
 import json
+import pathlib
+from pathlib import Path
 from typing import List, Optional, Iterator, Union
+
 
 from claude import constants
 from claude import custom_requests
-from claude.custom_types import JsonType, HeaderType
+from claude import helpers
+from claude.custom_types import JsonType, HeaderType, AttachmentType
+
 
 
 class ClaudeClient:
@@ -36,7 +41,7 @@ class ClaudeClient:
         organization_uuid: str,
         conversation_uuid: str,
         message: str,
-        attachments: List,
+        attachments: List[AttachmentType],
         timezone: constants.Timezone,
         model: constants.Model,
         stream: bool = False,
@@ -65,6 +70,44 @@ class ClaudeClient:
             ):
                 return_val = elem
             return return_val
+
+    def convert_file(
+        self, organization_uuid: str, file_path: str
+    ) -> Optional[AttachmentType]:
+        """Uploads a file to the claude API to convert it into an attatchment type. The return
+        type for this method can be directly sent as an attachment in send_message() calls.
+
+        The actual schema of the return json can be found under custom_types.py
+        """
+        pathlib_file = pathlib.Path(file_path)
+        if not pathlib_file.is_file():
+            return None
+        # If the file is text based, directly read the file contents and return an attachment for it.
+        is_text_based, contents = helpers.is_file_text_based(file_path)
+        if is_text_based:
+            if contents is None:
+                return None
+            return { # type: ignore
+                "file_name": pathlib_file.name,
+                "file_type": pathlib_file.suffix,
+                "file_size": len(contents),
+                "extracted_content": contents,
+            }
+
+        # If the file is not text based, upload the file to the claude API, and then receive
+        # the attachment in response.
+        form_data = {
+            "orgUuid": organization_uuid,
+            "file": (file_path, open(file_path, "rb")),
+        }
+        header = {}
+        header.update(self._get_default_header())
+        response = custom_requests.post_form_data(
+            self._get_api_url(constants.CONVERT_DOCUMENT_API_ENDPOINT), headers=header, files=form_data
+        )
+        if not response.ok:
+            return None
+        return response.json() # type: ignore
 
     def create_conversation(
         self, organization_uuid: str, new_conversation_uuid: str

@@ -4,7 +4,7 @@ import uuid
 
 from claude import constants
 from claude import claude_client
-from claude.custom_types import JsonType
+from claude.custom_types import JsonType, AttachmentType
 
 
 class ClaudeWrapper:
@@ -30,6 +30,7 @@ class ClaudeWrapper:
     def send_message(
         self,
         message: str,
+        attachments: List[AttachmentType] = [],
         conversation_uuid: Optional[str] = None,
         timezone: constants.Timezone = constants.Timezone.LA,
         model: constants.Model = constants.Model.CLAUDE_2,
@@ -48,11 +49,17 @@ class ClaudeWrapper:
             self._organization_uuid,
             conversation_to_use,
             message,
-            [],
+            attachments,
             timezone,
             model,
             stream=False,
         )
+    
+    def get_attachment(self, file_path: str) -> Optional[AttachmentType]:
+        """Returns an attachment type for a passed in |file_path|. AttachmentTypes can be sent
+        as part of the |attachment| argument in send_message().
+        """
+        return self._client.convert_file(self._organization_uuid, file_path)
 
     def start_new_conversation(
         self,

@@ -41,6 +41,9 @@ GET_CONVERSATION_INFO_API_ENDPOINT = (
 # API endpoint to rename a conversation
 RENAME_CONVERSATION_API_ENDPOINT = "/api/rename_chat"
 
+# API endpoint to upload a file and convert it to an attachment.
+CONVERT_DOCUMENT_API_ENDPOINT = "/api/convert_document"
+
 # Common headers that are used to bypass 403s.
 # Note that this doesn't contain user agent.
 HEADERS = {
