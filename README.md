@@ -33,7 +33,7 @@ pip install rev-claude-api
 If that doesn't work, you can install directly from this github repository:
 
 ```
-pip install git+git://github.com/github.com/AshwinPathi/claude.git
+pip install git+git://github.com/AshwinPathi/claude-api-py.git
 ```
 
 ### Step 2

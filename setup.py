@@ -7,11 +7,11 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(
-    name='rev_claude_api',
+    name='claude-api-py',
     packages=['claude'],
     version=__version__,
     license='MIT',
-    url='https://github.com/AshwinPathi/claude',
+    url='https://github.com/AshwinPathi/claude-api-py',
     description='Unofficial Anthropic Claude API for Python3.',
     keywords=['llm', 'claude', 'api', 'gpt'],
     long_description=long_description,
