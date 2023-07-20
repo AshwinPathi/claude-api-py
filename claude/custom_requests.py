@@ -10,7 +10,6 @@ from typing import Optional, Union, Iterator, Dict, Tuple
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 
-import pprint
 import sseclient
 
 from claude.custom_types import JsonType, HeaderType, FormDataType
@@ -154,7 +153,6 @@ def post_form_data(url: str, headers: HeaderType, files: FormDataType) -> Respon
     # based on the information we decoded.
     header_copy.update({"content-type": content_type})
     header_copy.update({"content-length": str(len(encoded_request_body))})
-    pprint.pprint(header_copy)
     return post(url, headers=header_copy, request_body=encoded_request_body)
 
 
