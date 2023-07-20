@@ -9,7 +9,7 @@ long_description = (this_directory / "README.md").read_text()
 setup(
     name='rev_claude_api',
     packages=['claude'],
-    version="0.2",
+    version=__version__,
     license='MIT',
     url='https://github.com/AshwinPathi/claude',
     description='Unofficial Anthropic Claude API for Python3.',
