@@ -15,6 +15,12 @@ The Unofficial Claude API is under active development. The following endpoints a
 
 Note that the api is __**synchronous**__.
 
+## TODO features
+- Fixing models OTHER than `claude_2`
+- asynchronous mode
+- Better caching
+- cleaner errors and passing these up to users
+
 
 ## Usage
 
