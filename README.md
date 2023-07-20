@@ -10,6 +10,8 @@ The Unofficial Claude API is under active development. The following endpoints a
 - Starting a conversation
 - Sending a message and receiving a response (can't send files yet)
 - Delete a conversation
+- Create an attachment from a file
+- Send attachments
 
 Note that the api is __**synchronous**__.
 
