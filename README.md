@@ -2,6 +2,10 @@
 
 The UNOFFICIAL free API for Anthropic's Claude LLM.
 
+## Background
+
+Claude is [Anthropic's](https://www.anthropic.com/) LLM app (similar to ChatGPT). This library allows you to use the API (for free) and interact with it in your python projects.
+
 ## Implemented actions:
 The Unofficial Claude API is under active development. The following endpoints are usable in some capacity:
 
@@ -22,6 +26,9 @@ Note that the api is __**synchronous**__.
 - cleaner errors and passing these up to users
 
 
+This project is under active development and is extremely unstable, so there are no guarantees it will work for you. If you find a bug or you think it should work in a scenario where it doesn't, file an issue.
+
+
 ## Usage
 
 ### Step 1
@@ -35,6 +42,10 @@ If that doesn't work, you can install directly from this github repository:
 ```
 pip install git+git://github.com/AshwinPathi/claude-api-py.git
 ```
+
+There is one requirement as of now:
+- `sseclient-py` [link here](https://github.com/mpetazzoni/sseclient)
+
 
 ### Step 2
 Get a `sessionKey` from the Claude website. You will need this to start the bot. Ideally also have a user agent of the computer you use to access claude.
@@ -126,7 +137,4 @@ conversation_history = claude_obj.get_conversation_info(conversation_uuid = conv
 
 
 ## Disclaimer
-This library is UNOFFICIAL and you might get banned for using it. I am not responsible if your account gets banned. If you would like to use the actual API, go to the [anthropic website](https://docs.anthropic.com/claude/docs).
-
-Its also under active development and is extremely unstable, so there are no guarantees it will work for you. If you find a bug or you think it should work in a scenario where it doesn't, file an issue.
-
+This library is for purely educational purposes and is UNOFFICIAL. I am not responsible if your account gets banned. If you would like to use the actual API, go to [anthropic website](https://docs.anthropic.com/claude/docs).
