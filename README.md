@@ -27,6 +27,15 @@ pip install git+git://github.com/github.com/AshwinPathi/claude.git#egg=claude
 ### Step 2
 Get a `sessionKey` from the Claude website. You will need this to start the bot. Ideally also have a user agent of the computer you use to access claude.
 
+You can get this information by logging into `https://claude.ai/chats` and doing the following:
+
+1. open inspect element (f12 on chrome)
+2. On the top bar, go to the `Application` tab.
+3. Under `Storage`, go to `Cookies`.
+4. look for a cookie called `https://claude.ai`, click it.
+5. click the `sessionKey` field, and copy the session key down. It should begin with `sk-ant-sid01...`
+
+
 ### Step 3
 Use the bot. You can see an example at `example.py`.
 
