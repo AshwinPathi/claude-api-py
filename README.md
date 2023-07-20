@@ -45,9 +45,21 @@ You can get this information by logging into `https://claude.ai/chats` and doing
 ### Step 3
 Use the bot. You can see an example at `example.py`.
 
-#### Examples:
+### Examples:
 
-##### Create the client and wrapper
+#### Importing the necessary libraries
+```py
+# The ClaudeClient is the raw API that gives you access to all organization and conversation level API calls
+# with a simple python interface. However, you have to pass organization_uuid and conversation_uuid everywhere, so
+# its not ideal if you want a simple to use API.
+from claude import claude_client
+
+# The ClaudeWrapper takes in a claude client instance and allows you to use a single organization and conversation
+# context. This allows you to use the API more ergonomically.
+from claude import claude_wrapper
+```
+
+#### Create the client and wrapper
 ```py
 client = claude_client.ClaudeClient(SESSION_KEY)
 organizations = client.get_organizations()
@@ -55,18 +67,18 @@ organizations = client.get_organizations()
 claude_obj = claude_wrapper.ClaudeWrapper(client, organizations[0]['uuid'])
 ```
 
-##### Starting a new conversation
+#### Starting a new conversation
 ```py
 conversation_uuid = claude_obj.start_new_conversation("New Conversation", "Hi Claude!")
 ```
 
-##### Send a message (passing in the client uuid)
+#### Send a message (passing in the client uuid)
 ```py
 conversation_uuid = claude_obj.get_conversations()[0]['uuid']
 response = claude_obj.send_message("How are you doing today!", conversation_uuid=conversation_uuid)
 ```
 
-##### Setting a conversation context and sending a message
+#### Setting a conversation context and sending a message
 ```py
 conversation_uuid = claude_obj.get_conversations()[0]['uuid']
 # This is so you don't have to constantly pass in conversation uuid on every call that requires it.
@@ -77,7 +89,7 @@ response = claude_obj.send_message("How are you doing today!")
 response = claude_obj.send_message("Who won the league of legends worlds 2022 finals?")
 ```
 
-##### Sending an attachment
+#### Sending an attachment
 ```py
 # This generates an attachment in the right format
 attachment = claude_obj.get_attachment('example_attachment.txt')
@@ -85,23 +97,23 @@ response = claude_obj.send_message("Hi Claude, what does this attachment say?", 
                                     conversation_uuid = conversation_uuid)
 ```
 
-##### Deleting a conversation
+#### Deleting a conversation
 ```py
 deleted = claude_obj.delete_conversation(conversation_uuid)
 ```
 
-##### Deleting all conversations in an organization
+#### Deleting all conversations in an organization
 ```py
 failed_deletions = claude_obj.delete_all_conversations()
 assert len(failed_deletions) == 0
 ```
 
-##### Renaming a conversation
+#### Renaming a conversation
 ```py
 conversation = claude_obj.rename_conversation("New name", conversation_uuid = conversation_uuid)
 ```
 
-##### Get conversation history
+#### Get conversation history
 ```py
 conversation_history = claude_obj.get_conversation_info(conversation_uuid = conversation_uuid)
 ```
