@@ -14,9 +14,16 @@ class ClaudeWrapper:
     in a conversation uuid on every method call.
     """
 
-    def __init__(self, client: claude_client.ClaudeClient, organization_uuid: str):
+    def __init__(self, client: claude_client.ClaudeClient, organization_uuid: Optional[str] = None):
+        """Initialize the wrapper with a client and an optional organization_uuid. If an organization uuid
+        isn't provided, the wrapper will automatically use the first organization in the list of organizations
+        that the user is in.
+        """
         self._client = client
-        self._organization_uuid = organization_uuid
+        if organization_uuid is None:
+            self._organization_uuid = self._client.get_organizations()[0]['uuid']  # type: ignore
+        else:
+            self._organization_uuid = organization_uuid
 
         self._current_conversation = None
 
@@ -141,7 +148,10 @@ class ClaudeWrapper:
         )
 
     def delete_all_conversations(self) -> List[str]:
-        """Deletes all the conversations in the organization."""
+        """Deletes all the conversations in the organization. Returns a list of conversations uuids
+        that the client failed to delete. In the case that all conversations were deleted correctly,
+        this should return an empty list.
+        """
         failed_deletion = []
         conversations = self._client.get_conversations_from_org(self._organization_uuid)
         for conversation in conversations:  # type: ignore

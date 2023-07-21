@@ -16,6 +16,7 @@ The Unofficial Claude API is under active development. The following endpoints a
 - Delete a conversation
 - Create an attachment from a file
 - Send attachments
+- getting message history
 
 Note that the api is __**synchronous**__.
 
@@ -80,9 +81,11 @@ from claude import claude_wrapper
 #### Create the client and wrapper
 ```py
 client = claude_client.ClaudeClient(SESSION_KEY)
-organizations = client.get_organizations()
 
-claude_obj = claude_wrapper.ClaudeWrapper(client, organizations[0]['uuid'])
+organizations = client.get_organizations()
+# You can omit passing in the organization uuid and the wrapper will assume
+# you will use the first organization instead.
+claude_obj = claude_wrapper.ClaudeWrapper(client, organization_uuid=organizations[0]['uuid'])
 ```
 
 #### Starting a new conversation
