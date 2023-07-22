@@ -33,6 +33,8 @@ class Response:
 
     ok: bool
     data: Union[bytes, str]
+    status_code: Optional[int]
+    error: Optional[str]
 
     def json(self) -> JsonType:
         if isinstance(self.data, str):
@@ -216,9 +218,10 @@ def _safe_request_read(request: Request, data: Optional[bytes] = None) -> Respon
     """Read a request with some data and return the response. Handles packaging
     the response in a Response Wrapper object.
     """
+    status_code = None
     try:
         with urlopen(request, data=data) as response:
-            return Response(ok=True, data=response.read())
+            status_code = response.getcode()
+            return Response(ok=True, data=response.read(), status_code=status_code, error=None)
     except (HTTPError, URLError) as e:
-        print(e)
-        return Response(ok=False, data=b"")
+        return Response(ok=False, data=b"", status_code=status_code, error=str(e))
