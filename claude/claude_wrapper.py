@@ -190,6 +190,19 @@ class ClaudeWrapper:
         """Clears the current conversation context."""
         self._current_conversation = None
 
+    def switch_client(self, new_client: claude_client.ClaudeClient, organization_uuid: Optional[str] = None) -> None:
+        """Switches the current client to a new client. Can optionally provide an |organization_uuid|,
+        otherwise we will infer the organization uuid to be the first uuid in the list or organizations
+        that the client is in.
+        """
+        self._client = new_client
+        if organization_uuid is None:
+            self._organization_uuid = self._client.get_organizations()[0]['uuid']  # type: ignore
+        else:
+            self._organization_uuid = organization_uuid
+
+        self._current_conversation = None        
+
     ####################################################################
     #                                                                  #
     #                       Helper Methods                             #
