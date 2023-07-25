@@ -12,7 +12,7 @@ The Unofficial Claude API is under active development. The following endpoints a
 - Getting organizations you're in
 - Getting conversations you're in
 - Starting a conversation
-- Sending a message and receiving a response (can't send files yet)
+- Sending a message and receiving a response
 - Delete a conversation
 - Create an attachment from a file
 - Send attachments
