@@ -90,7 +90,12 @@ claude_obj = claude_wrapper.ClaudeWrapper(client, organization_uuid=organization
 
 #### Starting a new conversation
 ```py
-conversation_uuid = claude_obj.start_new_conversation("New Conversation", "Hi Claude!")
+new_conversation_data = claude_obj.start_new_conversation("New Conversation", "Hi Claude!")
+conversation_uuid = new_conversation_data['uuid']
+# You can get the response from the initial message you sent with:
+initial_response = new_conversation_data['response']
+# You can get the title of the new chat you created with this:
+chat_title = new_conversation_data['title']
 ```
 
 #### Send a message (passing in the client uuid)

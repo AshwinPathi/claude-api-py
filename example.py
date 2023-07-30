@@ -38,8 +38,10 @@ def main():
     time.sleep(1)
 
     # First, lets create a new chat.
-    conversation_uuid = claude_obj.start_new_conversation("New Conversation", "Hi Claude!")
-    assert conversation_uuid is not None
+    new_convo_response = claude_obj.start_new_conversation("New Conversation", "Hi Claude!")
+    assert new_convo_response is not None
+    print("Title of new chat: ", new_convo_response['title'])
+    conversation_uuid = new_convo_response['uuid']
 
     # Listing the conversations again we can see that we have a new conversation
     conversations = claude_obj.get_conversations()

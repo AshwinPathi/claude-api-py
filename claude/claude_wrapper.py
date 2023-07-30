@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 import uuid
 
 from claude import constants
@@ -70,16 +70,22 @@ class ClaudeWrapper:
     def start_new_conversation(
         self,
         conversation_name: str,
-        initial_message: str,
+        initial_message: str = "",
         initial_attachments: List[AttachmentType] = [],
         timezone: constants.Timezone = constants.Timezone.LA,
         model: constants.Model = constants.Model.CLAUDE_2,
-    ) -> Optional[str]:
+    ) -> Optional[Dict[str, str]]:
         """Creates a new conversation with |conversation_name| and initiates the conversation
         with an initial message |initial_message|, and optionally an initial set of attachments
         in |initial_attachments|.
 
-        Returns the newly generated conversation ID, if it didn't fail. Otherwise, returns None.
+        Returns a json with the uuid of the newly created chat, the response from creating the title
+        for the new chat, and the title of the new chat, in a json formatted like:
+        {
+            'uuid': {conversation_uuid: str},
+            'title': {chat_title: str},
+            'response': {initial message response: str}
+        }
         """
         conversation_uuid = str(uuid.uuid4())
 
@@ -91,18 +97,20 @@ class ClaudeWrapper:
         if create_convo_result is None:
             return None
 
-        # Send the initial message to the newly created conversation.
-        send_init_message_result = self._client.send_message(
-            self._organization_uuid,
-            conversation_uuid,
-            initial_message,
-            initial_attachments,
-            timezone,
-            model,
-            stream=False,
-        )
-        if send_init_message_result is None:
-            return None
+        send_init_message_result = None
+        if initial_message:
+            # Send the initial message to the newly created conversation.
+            send_init_message_result = self._client.send_message(
+                self._organization_uuid,
+                conversation_uuid,
+                initial_message,
+                initial_attachments,
+                timezone,
+                model,
+                stream=False,
+            )
+            if send_init_message_result is None:
+                return None
 
         # Generate a title for the new chat based on the names of previous chats.
         recent_conversation_names = []
@@ -122,7 +130,11 @@ class ClaudeWrapper:
         if convo_title is None:
             return None
 
-        return conversation_uuid
+        return { # type: ignore
+            'uuid': conversation_uuid,
+            'title': convo_title['title'], # type: ignore
+            'response': "" if send_init_message_result is None else send_init_message_result['completion'] # type: ignore
+        }
 
     def rename_conversation(
         self, new_title: str, conversation_uuid: Optional[str] = None
