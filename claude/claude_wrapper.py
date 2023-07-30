@@ -71,11 +71,13 @@ class ClaudeWrapper:
         self,
         conversation_name: str,
         initial_message: str,
+        initial_attachments: List[AttachmentType] = [],
         timezone: constants.Timezone = constants.Timezone.LA,
         model: constants.Model = constants.Model.CLAUDE_2,
     ) -> Optional[str]:
         """Creates a new conversation with |conversation_name| and initiates the conversation
-        with an initial message |initial_message|.
+        with an initial message |initial_message|, and optionally an initial set of attachments
+        in |initial_attachments|.
 
         Returns the newly generated conversation ID, if it didn't fail. Otherwise, returns None.
         """
@@ -94,7 +96,7 @@ class ClaudeWrapper:
             self._organization_uuid,
             conversation_uuid,
             initial_message,
-            [],
+            initial_attachments,
             timezone,
             model,
             stream=False,
