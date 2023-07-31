@@ -84,7 +84,7 @@ class ClaudeWrapper:
         {
             'uuid': {conversation_uuid: str},
             'title': {chat_title: str},
-            'response': {initial message response: str}
+            'response': {initial message response: Json}
         }
         """
         conversation_uuid = str(uuid.uuid4())
@@ -97,7 +97,7 @@ class ClaudeWrapper:
         if create_convo_result is None:
             return None
 
-        send_init_message_result = None
+        send_init_message_result = {}
         if initial_message:
             # Send the initial message to the newly created conversation.
             send_init_message_result = self._client.send_message(
@@ -133,7 +133,7 @@ class ClaudeWrapper:
         return { # type: ignore
             'uuid': conversation_uuid,
             'title': convo_title['title'], # type: ignore
-            'response': "" if send_init_message_result is None else send_init_message_result['completion'] # type: ignore
+            'response': send_init_message_result # type: ignore
         }
 
     def rename_conversation(

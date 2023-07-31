@@ -41,6 +41,8 @@ def main():
     new_convo_response = claude_obj.start_new_conversation("New Conversation", "Hi Claude!")
     assert new_convo_response is not None
     print("Title of new chat: ", new_convo_response['title'])
+    # You can get the initial response with:
+    # initial_response = new_convo_response['response']
     conversation_uuid = new_convo_response['uuid']
 
     # Listing the conversations again we can see that we have a new conversation
