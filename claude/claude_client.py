@@ -58,7 +58,9 @@ class ClaudeClient:
                 model,
             )
         else:
-            return_val = None
+            STOP_SEQUENCE = 'stop_sequence'
+            aggregated_completion = ''
+            final_response = None
             for elem in self._send_message(
                 organization_uuid,
                 conversation_uuid,
@@ -67,8 +69,12 @@ class ClaudeClient:
                 timezone,
                 model,
             ):
-                return_val = elem
-            return return_val
+                final_response = elem
+                aggregated_completion += elem['completion']
+                if elem['stop_reason'] == STOP_SEQUENCE:
+                    break
+            final_response['completion'] = aggregated_completion
+            return final_response
 
     def convert_file(
         self, organization_uuid: str, file_path: str
