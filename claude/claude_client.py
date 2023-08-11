@@ -8,8 +8,13 @@ from claude import constants
 from claude import custom_requests
 from claude import helpers
 from claude.custom_types import JsonType, HeaderType, AttachmentType
+from claude import logger
 
-
+# Logging levels.
+LOG_LEVEL_DEBUG = logger.logger.DEBUG
+LOG_LEVEL_INFO = logger.logger.INFO
+LOG_LEVEL_WARNING = logger.logger.WARNING
+LOG_LEVEL_ERROR = logger.logger.ERROR
 
 class ClaudeClient:
     """Acts as a lower level interface to the Claude API. Returns raw JSON
@@ -26,6 +31,7 @@ class ClaudeClient:
         base_url: str = constants.BASE_URL,
         user_agent: str = constants.USER_AGENT,
         spoofed_headers: Optional[HeaderType] = None,
+        logging_level: int = LOG_LEVEL_WARNING,
     ):
         self._session_key = session_key
         self._base_url = base_url
@@ -34,6 +40,8 @@ class ClaudeClient:
             self._spoofed_headers = constants.HEADERS
         else:
             self._spoofed_headers = spoofed_headers
+
+        logger.logger.getLogger().setLevel(logging_level)
 
     def send_message(
         self,
@@ -59,7 +67,7 @@ class ClaudeClient:
             )
         else:
             STOP_SEQUENCE = 'stop_sequence'
-            aggregated_completion = ''
+            aggregated_completion = []
             final_response = None
             for elem in self._send_message(
                 organization_uuid,
@@ -70,10 +78,23 @@ class ClaudeClient:
                 model,
             ):
                 final_response = elem
-                aggregated_completion += elem['completion']
-                if elem['stop_reason'] == STOP_SEQUENCE:
+                # Make sure that the completion text is in the json chunks.
+                if 'completion' in elem:
+                    # The new API sends each chunk of text in the `completion` field, and
+                    # it has to be stiched together at the end to form the full response.
+                    aggregated_completion.append(elem['completion'])
+                # Return early if we hit the stop sequence, though this may not be correct
+                # 100% of the time.
+                if 'stop_reason' in elem and elem['stop_reason'] == STOP_SEQUENCE:
                     break
-            final_response['completion'] = aggregated_completion
+            # If we never set the final response, that means that we had no response.
+            # In this case, return None.
+            if final_response is None:
+                logger.logger.warning("Response from sending message is None.")
+                return None
+            # Return the response as if it were the full json response, but replace
+            # the `completion` section with the aggregated completion.
+            final_response['completion'] = ''.join(aggregated_completion)
             return final_response
 
     def convert_file(
@@ -86,11 +107,14 @@ class ClaudeClient:
         """
         pathlib_file = pathlib.Path(file_path)
         if not pathlib_file.is_file():
+            logger.logger.warning("Path %s does not exist.", file_path)
             return None
         # If the file is text based, directly read the file contents and return an attachment for it.
         is_text_based, contents = helpers.is_file_text_based(file_path)
         if is_text_based:
+            logger.logger.info("Text based file detected, not converting.")
             if contents is None:
+                logger.logger.warning("Contents of file in %s is not unicode decodable.", file_path)
                 return None
             return { # type: ignore
                 "file_name": pathlib_file.name,
@@ -101,6 +125,7 @@ class ClaudeClient:
 
         # If the file is not text based, upload the file to the claude API, and then receive
         # the attachment in response.
+        logger.logger.info("Uploading non-text based file %s to API endpoint.", file_path)
         form_data = {
             "orgUuid": organization_uuid,
             "file": (file_path, open(file_path, "rb")),
@@ -111,7 +136,10 @@ class ClaudeClient:
             self._get_api_url(constants.CONVERT_DOCUMENT_API_ENDPOINT), headers=header, files=form_data
         )
         if not response.ok:
+            logger.logger.warning("Failed response object: %s", str(response))
             return None
+
+        logger.logger.info("Response json object: %s", str(response.json()))
         return response.json() # type: ignore
 
     def create_conversation(
@@ -133,7 +161,10 @@ class ClaudeClient:
             request_body={"name": "", "uuid": new_conversation_uuid},
         )
         if not response.ok:
+            logger.logger.warning("Failed response object: %s", str(response))
             return None
+
+        logger.logger.info("Response json object: %s", str(response.json()))
         return response.json()
 
     def delete_conversation(
@@ -151,6 +182,8 @@ class ClaudeClient:
             ),
             headers=header,
         )
+
+        logger.logger.info("Response json object: %s", str(response))
         return response.ok
 
     def generate_conversation_title(
@@ -177,7 +210,10 @@ class ClaudeClient:
             },
         )
         if not response.ok:
+            logger.logger.warning("Failed response object: %s", str(response))
             return None
+
+        logger.logger.info("Response json object: %s", str(response.json()))
         return response.json()
 
     def rename_conversation_title(
@@ -198,7 +234,10 @@ class ClaudeClient:
             request_body=request_body,
         )
         if not response.ok:
+            logger.logger.warning("Failed response object: %s", str(response))
             return None
+
+        logger.logger.info("Response json object: %s", str(response.json()))
         return response.json()
 
     def get_conversation_info(
@@ -218,7 +257,10 @@ class ClaudeClient:
             headers=header,
         )
         if not response.ok:
+            logger.logger.warning("Failed response object: %s", str(response))
             return None
+
+        logger.logger.info("Response json object: %s", str(response.json()))
         return response.json()
 
     def get_conversations_from_org(self, organization_uuid: str) -> Optional[JsonType]:
@@ -234,7 +276,10 @@ class ClaudeClient:
             headers=header,
         )
         if not response.ok:
+            logger.logger.warning("Failed response object: %s", str(response))
             return None
+
+        logger.logger.info("Response json object: %s", str(response.json()))
         return response.json()
 
     def get_organization_by_uuid(self, organization_uuid: str) -> Optional[JsonType]:
@@ -256,7 +301,10 @@ class ClaudeClient:
             self._get_api_url(constants.GET_ORGANIZATIONS_API_ENDPOINT), headers=header
         )
         if not response.ok:
+            logger.logger.warning("Failed response object: %s", str(response))
             return None
+
+        logger.logger.info("Response json object: %s", str(response.json()))
         return response.json()
 
     def _send_message(

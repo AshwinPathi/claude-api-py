@@ -13,6 +13,7 @@ from urllib.error import HTTPError, URLError
 import sseclient
 
 from claude.custom_types import JsonType, HeaderType, FormDataType
+from claude import logger
 
 
 ####################################################################
@@ -160,6 +161,7 @@ def post_form_data(url: str, headers: HeaderType, files: FormDataType) -> Respon
 
 def get(url: str, headers: HeaderType) -> Response:
     """Public method for a GET Request."""
+    logger.logger.info("Sending GET request to: %s with headers: %s", url, str(headers))
     request = Request(url)
     for header_key, header_value in headers.items():
         request.add_header(header_key, header_value)
@@ -171,6 +173,7 @@ def post(
     url: str, headers: HeaderType, request_body: Optional[Union[JsonType, bytes]] = None
 ) -> Response:
     """Public method for a POST Request."""
+    logger.logger.info("Sending POST request to: %s with headers: %s", url, str(headers))
     request = Request(url, method="POST")
     for header_key, header_value in headers.items():
         request.add_header(header_key, header_value)
@@ -178,11 +181,15 @@ def post(
 
     encoded_request_body = None
     if request_body is not None:
+        logger.logger.info("POST request body is non-empty.")
         if isinstance(request_body, bytes):
+            logger.logger.info("POST request body is bytes type.")
             encoded_request_body = request_body
         elif isinstance(request_body, str):
+            logger.logger.info("POST request body is string type, encoding.")
             encoded_request_body = request_body.encode()
         else:
+            logger.logger.info("POST request body is JSON type, dumping then encoding.")
             encoded_request_body = json.dumps(request_body).encode()
     return _safe_request_read(request, data=encoded_request_body)
 
@@ -191,6 +198,7 @@ def sse(
     url: str, headers: HeaderType, request_body: Optional[JsonType] = None
 ) -> Iterator[str]:
     """Public method for a POST request that requires SSE."""
+    logger.logger.info("Sending SSE POST request to: %s with headers: %s", url, str(headers))
     request = Request(url, method="POST")
     for header_key, header_value in headers.items():
         request.add_header(header_key, header_value)
@@ -202,11 +210,13 @@ def sse(
         for event in client.events():
             yield event.data
     except (HTTPError, URLError) as e:
+        logger.logger.info("SEE POST failed with error: %s", str(e))
         print(e)
 
 
 def delete(url: str, headers: HeaderType) -> Response:
     """Public method for a DELETE request."""
+    logger.logger.info("Sending DELETE request to: %s with headers: %s", url, str(headers))
     request = Request(url, method="DELETE")
     for header_key, header_value in headers.items():
         request.add_header(header_key, header_value)
