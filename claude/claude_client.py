@@ -321,7 +321,7 @@ class ClaudeClient:
         """
         request_body = {
             "attachments": attachments,
-            "files":[],
+            "files": [],
             "model": model,
             "timezone": timezone, 
             "prompt":message,
@@ -343,11 +343,14 @@ class ClaudeClient:
             request_body=request_body,
         ):
             yield json.loads(streamed_data_chunk)
+    
     def _create_conversation_endpoint(
         self,
         organization_uuid: str, 
-        conversation_uuid: str) -> str:
+        conversation_uuid: str
+    ) -> str:
         return f"/api/organizations/{organization_uuid}/chat_conversations/{conversation_uuid}/completion"
+    
     def _get_api_url(self, endpoint: str):
         """Get the fully formed request URL."""
         return self._base_url + endpoint
