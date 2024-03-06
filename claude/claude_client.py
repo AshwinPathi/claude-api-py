@@ -323,9 +323,8 @@ class ClaudeClient:
             "attachments": attachments,
             "files": [],
             "model": model,
-            "timezone": timezone, 
-            "prompt":message,
-
+            "timezone": timezone,
+            "prompt": message,
         }
         header = {}
         header.update(self._get_default_header())

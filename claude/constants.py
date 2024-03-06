@@ -85,7 +85,7 @@ class Timezone(str, Enum):
 class Model(str, Enum):
     CLAUDE_2_P_0 = "claude-2.0"
     CLAUDE_2_P_1 = "claude-2.1"
-    CLAUSE_INSTANT_1_P_2 = "claude-instant-1.2"
+    CLAUDE_INSTANT_1_P_2 = "claude-instant-1.2"
     CLAUDE_SONNET = "claude-3-sonnet-20240229"
     CLAUDE_OPUS = "claude-3-opus-20240229"
 
