@@ -320,11 +320,11 @@ class ClaudeClient:
         response output.
         """
         request_body = {
-            "organization_uuid": organization_uuid,
-            "conversation_uuid": conversation_uuid,
-            "text": message,
             "attachments": attachments,
-            "completion": {"prompt": message, "timezone": timezone, "model": model},
+            "files": [],
+            "model": model,
+            "timezone": timezone,
+            "prompt": message,
         }
         header = {}
         header.update(self._get_default_header())
@@ -333,14 +333,23 @@ class ClaudeClient:
             header["accept"] += ",text/event-stream,text/event-stream"
         else:
             header["accept"] = "text/event-stream,text/event-stream"
-
+        
+        endpoint = self._create_conversation_endpoint(conversation_uuid=conversation_uuid, organization_uuid=organization_uuid)
+        
         for streamed_data_chunk in custom_requests.sse(
-            self._get_api_url(constants.APPEND_MESSAGE_API_ENDPOINT),
+            self._get_api_url(endpoint),
             headers=header,
             request_body=request_body,
         ):
             yield json.loads(streamed_data_chunk)
-
+    
+    def _create_conversation_endpoint(
+        self,
+        organization_uuid: str, 
+        conversation_uuid: str
+    ) -> str:
+        return f"/api/organizations/{organization_uuid}/chat_conversations/{conversation_uuid}/completion"
+    
     def _get_api_url(self, endpoint: str):
         """Get the fully formed request URL."""
         return self._base_url + endpoint

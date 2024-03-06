@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 # The ClaudeClient is the raw API that gives you access to all organization and conversation level API calls
 # with a simple python interface. However, you have to pass organization_uuid and conversation_uuid everywhere, so
 # its not ideal if you want a simple to use API.
-from claude import claude_client
+from claude import claude_client, constants
 
 # The ClaudeWrapper takes in a claude client instance and allows you to use a single organization and conversation
 # context. This allows you to use the API more ergonomically.
@@ -37,8 +37,10 @@ def main():
     print()
     time.sleep(1)
 
+    model = constants.DEFAULT_MODEL
+    
     # First, lets create a new chat.
-    new_convo_response = claude_obj.start_new_conversation("New Conversation", "Hi Claude!")
+    new_convo_response = claude_obj.start_new_conversation("New Conversation", "Hi Claude!", model=model)
     assert new_convo_response is not None
     print("Title of new chat: ", new_convo_response['title'])
     # You can get the initial response with:
@@ -55,7 +57,7 @@ def main():
 
 
     # send a message without the context set:
-    response = claude_obj.send_message("How are you doing today!", conversation_uuid=conversation_uuid)
+    response = claude_obj.send_message("How are you doing today!", conversation_uuid=conversation_uuid, model=model)
     print("Printing out the response of sending a message")
     pprint.pprint(response)
     print()
@@ -75,7 +77,7 @@ def main():
     # set the context and send a message, so subsequent messages don't need to pass in the
     # conversation uuid.
     claude_obj.set_conversation_context(conversation_uuid)
-    response = claude_obj.send_message("How are you doing today?")
+    response = claude_obj.send_message("How are you doing today?", model=model)
     print("Send another message")
     pprint.pprint(response)
     print()
@@ -88,7 +90,7 @@ def main():
     if attachment is None:
         print("Getting attachment failed.")
         return
-    response = claude_obj.send_message("Hi Claude, what does this attachment say?", attachments=[attachment])
+    response = claude_obj.send_message("Hi Claude, what does this attachment say?", attachments=[attachment], model=model)
     print("Checking attachment response")
     pprint.pprint(response)
     print()
