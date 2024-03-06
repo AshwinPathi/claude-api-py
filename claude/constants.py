@@ -91,3 +91,5 @@ class Model(str, Enum):
 
     def __str__(self) -> str:
         return self.value
+
+DEFAULT_MODEL = Model.CLAUDE_SONNET

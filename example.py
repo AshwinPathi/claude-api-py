@@ -37,7 +37,7 @@ def main():
     print()
     time.sleep(1)
 
-    model = constants.Model.CLAUDE_OPUS
+    model = constants.DEFAULT_MODEL
     
     # First, lets create a new chat.
     new_convo_response = claude_obj.start_new_conversation("New Conversation", "Hi Claude!", model=model)
@@ -108,7 +108,7 @@ def main():
     pprint.pprint(conversations)
     print()
     time.sleep(1)
-s
+
 
 
 if __name__ == '__main__':
