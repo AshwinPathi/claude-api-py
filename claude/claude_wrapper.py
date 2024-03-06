@@ -39,7 +39,7 @@ class ClaudeWrapper:
         attachments: List[AttachmentType] = [],
         conversation_uuid: Optional[str] = None,
         timezone: constants.Timezone = constants.Timezone.LA,
-        model: constants.Model = constants.Model.CLAUDE_2,
+        model: constants.Model = constants.Model.CLAUDE_2_P_0,
     ) -> Optional[JsonType]:
         """Sends a message to the provided |conversation_uuid|, if one is provided. If none
         is provided, falls back to using the current conversation context. Otherwise,
@@ -73,7 +73,7 @@ class ClaudeWrapper:
         initial_message: str = "",
         initial_attachments: List[AttachmentType] = [],
         timezone: constants.Timezone = constants.Timezone.LA,
-        model: constants.Model = constants.Model.CLAUDE_2,
+        model: constants.Model = constants.Model.CLAUDE_2_P_0,
     ) -> Optional[Dict[str, str]]:
         """Creates a new conversation with |conversation_name| and initiates the conversation
         with an initial message |initial_message|, and optionally an initial set of attachments

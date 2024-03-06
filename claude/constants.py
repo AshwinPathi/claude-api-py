@@ -83,9 +83,11 @@ class Timezone(str, Enum):
 
 ###### Models
 class Model(str, Enum):
-    CLAUDE_2 = "claude-2"
-    CLAUDE_1_P_3 = "claude-1.3"
-    CLAUDE_INSTANT_100k = "claude-instant-100k"
+    CLAUDE_2_P_0 = "claude-2.0"
+    CLAUDE_2_P_1 = "claude-2.1"
+    CLAUSE_INSTANT_1_P_2 = "claude-instant-1.2"
+    CLAUDE_SONNET = "claude-3-sonnet-20240229"
+    CLAUDE_OPUS = "claude-3-opus-20240229"
 
     def __str__(self) -> str:
         return self.value
